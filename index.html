@@ -1,218 +1,425 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Bridge.audio — Activity Insights Pro</title>
-<style>
-:root{
-  --primary:#2F43DE;
-  --primaryDark:#2433B8;
-  --primarySoft:#EEF0FF;
-  --yellow:#F6C247;
-  --pink:#FF3D68;
-  --pinkSoft:#FFF0F4;
-  --bg:#F6F6F8;
-  --surface:#FFFFFF;
-  --surface2:#FAFAFB;
-  --line:#E4E4E8;
-  --lineSoft:#EFEFF2;
-  --text:#252428;
-  --muted:#777680;
-  --muted2:#A2A1AA;
-  --shadow:0 24px 70px rgba(25,25,35,.13);
-  --shadowSoft:0 10px 28px rgba(25,25,35,.08);
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  -webkit-font-smoothing:antialiased;overflow:hidden;
-}
-.app{
-  height:100vh;width:100vw;display:grid;grid-template-columns:92px 1fr;
-  grid-template-rows:72px 1fr;grid-template-areas:"nav header" "nav main";
-  background:var(--bg);
-}
-.side{
-  grid-area:nav;background:#fff;border-right:1px solid var(--line);
-  display:flex;flex-direction:column;align-items:center;padding:18px 0 16px;gap:24px;
-}
-.logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#78F4A8 0 56%,#18181C 57%);outline:2px solid #DADAE0;outline-offset:3px}
-.plus{width:64px;height:64px;border-radius:999px;border:1px solid #D8D8DE;background:#fff;display:grid;place-items:center;box-shadow:var(--shadowSoft);font-size:30px;line-height:1;color:#252428}
-.nav{display:flex;flex-direction:column;gap:20px;width:100%;align-items:center}
-.nav a{width:100%;display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#8F8E97;font-size:12px}
-.nav .ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#8F8E97}
-.nav .active{color:#252428;font-weight:700}
-.nav .active .ico{background:var(--yellow);color:#fff}
-.grow{flex:1}
-.miniBottom{display:flex;gap:14px;color:#8F8E97;font-size:20px}
-.header{
-  grid-area:header;margin:12px 14px 0 0;background:#fff;border-radius:26px 26px 0 0;
-  display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--lineSoft);
-}
-.crumb{display:flex;align-items:center;gap:8px;color:#777680;font-size:14px;min-width:0}
-.crumb strong{color:#252428;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.crumbIcon{width:26px;height:26px;border-radius:7px;background:#F6C247;display:grid;place-items:center;color:#fff;font-size:14px}
-.headActions{display:flex;align-items:center;gap:8px}
-.roundBtn{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#777680;background:#fff;border:0}
-.avatar{width:40px;height:40px;border-radius:999px;background:#222;color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800}
-.main{
-  grid-area:main;margin:0 14px 14px 0;background:#fff;border-radius:0 0 26px 26px;
-  display:grid;grid-template-columns:minmax(520px,1fr) 456px;overflow:hidden;
-}
-.project{
-  padding:32px 34px 40px;overflow:auto;border-right:1px solid var(--lineSoft);
-}
-.hero{height:260px;border-radius:20px;background:#09090B;display:flex;align-items:center;justify-content:flex-end;padding-right:72px;color:#fff;font:56px/1 Georgia,serif;letter-spacing:-.05em;position:relative;overflow:hidden}
-.hero:before{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 25% 22%,rgba(47,67,222,.45),transparent 35%),radial-gradient(circle at 78% 76%,rgba(246,194,71,.28),transparent 32%)}
-.hero span{position:relative}
-.project h1{margin:24px 0 8px;font-size:34px;letter-spacing:-.04em;line-height:1.05}
-.meta{color:#777680;font-size:14px;margin-bottom:28px}
-.copy{max-width:760px;color:#36353D;font-size:15px;line-height:1.65}
-.copy a{color:var(--primary)}
-.drawer{position:relative;background:#fff;overflow:hidden;display:flex;flex-direction:column}
-.drawerHead{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--lineSoft)}
-.drawerTitle{display:flex;align-items:center;gap:10px;font-weight:820;font-size:18px;letter-spacing:-.02em}
-.proBadge{height:30px;display:inline-flex;align-items:center;gap:6px;padding:0 10px;border-radius:10px;background:var(--primarySoft);color:var(--primary);font-size:13px;font-weight:850}
-.proBadge img{width:18px;height:18px}
-.close{width:38px;height:38px;border-radius:12px;border:0;background:#fff;font-size:28px;color:#252428;line-height:1}
-.drawerBody{padding:22px 22px 32px;overflow:auto}
-.limitNote{display:flex;align-items:flex-start;gap:10px;background:#FAFAFB;border:1px solid var(--lineSoft);border-radius:16px;padding:12px 14px;margin-bottom:18px;color:#5F5E67;font-size:13px;line-height:1.35}
-.limitNote img{width:20px;height:20px;flex:0 0 auto}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
-.kpi{border:1px solid var(--lineSoft);border-radius:16px;background:#fff;padding:14px 12px;box-shadow:0 4px 14px rgba(25,25,35,.04)}
-.kpi .num{font-size:26px;font-weight:850;letter-spacing:-.04em;color:#252428}
-.kpi .label{font-size:12px;color:#777680;margin-top:2px}
-.sectionTitle{display:flex;align-items:center;justify-content:space-between;margin:4px 0 10px}
-.sectionTitle h2{font-size:15px;margin:0;font-weight:850;letter-spacing:-.01em}
-.freeTag{font-size:12px;color:#777680;background:#F7F7F8;border:1px solid var(--lineSoft);border-radius:999px;padding:6px 9px}
-.timeline{border:1px solid var(--lineSoft);border-radius:20px;background:#fff;overflow:hidden}
-.activity{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center;padding:14px 14px;border-bottom:1px solid var(--lineSoft)}
-.activity:last-child{border-bottom:0}
-.av{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-weight:850;font-size:12px}
-.av.blue{background:#E8EBFF;color:#2F43DE}.av.green{background:#EAF8F1;color:#267A50}.av.yellow{background:#FFF6DA;color:#9F6B00}
-.actMain{min-width:0}
-.actTitle{font-size:14px;font-weight:780;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.actSub{font-size:13px;color:#777680;margin-top:2px}
-.time{font-size:12px;color:#8F8E97;white-space:nowrap}
-.hiddenDivider{position:relative;text-align:center;margin:18px 0 14px;color:#777680;font-size:13px;font-weight:750}
-.hiddenDivider:before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--lineSoft)}
-.hiddenDivider span{position:relative;background:#fff;padding:0 12px}
-.lockedRows{border:1px solid var(--lineSoft);border-radius:20px;overflow:hidden;background:#fff;margin-bottom:16px}
-.locked{filter:blur(2.6px);opacity:.58;user-select:none}
-.locked .actTitle{color:#52515B}
-.paywall{
-  position:relative;border:1px solid #D9DCF8;border-radius:24px;overflow:hidden;background:
-    radial-gradient(circle at 80% 0%,rgba(47,67,222,.16),transparent 35%),
-    linear-gradient(180deg,#FFFFFF 0%,#F6F7FF 100%);
-  box-shadow:0 18px 38px rgba(47,67,222,.13);padding:22px 20px 20px;margin-top:14px;
-}
-.paywall:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 0% 100%,rgba(246,194,71,.18),transparent 40%);pointer-events:none}
-.paywall>*{position:relative}
-.payTop{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.diamondBubble{width:42px;height:42px;border-radius:14px;background:#EEF0FF;display:grid;place-items:center;box-shadow:inset 0 0 0 1px #DDE1FF}
-.diamondBubble img{width:24px;height:24px}
-.paywall h3{margin:0;font-size:22px;line-height:1.05;letter-spacing:-.045em}
-.paywall p{margin:8px 0 18px;color:#52515B;font-size:14px;line-height:1.45}
-.cta{
-  width:100%;height:48px;border:0;border-radius:13px;background:var(--primary);color:#fff;
-  font-size:15px;font-weight:850;display:flex;align-items:center;justify-content:center;gap:9px;
-  box-shadow:0 12px 24px rgba(47,67,222,.28);cursor:pointer;transition:transform .15s ease,background .15s ease;
-}
-.cta:hover{background:var(--primaryDark);transform:translateY(-1px)}
-.cta img{width:20px;height:20px;filter:brightness(0) invert(1)}
-.features{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
-.feature{min-height:64px;border:1px solid rgba(47,67,222,.12);background:rgba(255,255,255,.62);border-radius:15px;padding:10px;display:flex;gap:9px;align-items:flex-start}
-.feature img{width:20px;height:20px;flex:0 0 auto}
-.feature strong{display:block;font-size:12px;line-height:1.15}
-.feature span{display:block;font-size:11px;color:#777680;margin-top:3px;line-height:1.25}
-.micro{margin-top:12px;text-align:center;color:#777680;font-size:12px}
-@media(max-width:1100px){.main{grid-template-columns:1fr}.project{display:none}.app{grid-template-columns:0 1fr}.side{display:none}.header{margin-left:14px}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bridge.audio — Activity Report Pro Analytics Banner Overlay</title>
+  <style>
+    :root {
+      --black: #252428;
+      --blue: #3444D4;
+      --yellow: #FFC94A;
+      --pink-soft: #FFEAF0;
+      --pink: #FF5F88;
+      --purple-soft: #E9E7FF;
+      --purple: #5867F2;
+      --grey-50: #FAFAFB;
+      --grey-100: #F5F5F7;
+      --grey-200: #ECECF0;
+      --grey-300: #D8D8DE;
+      --grey-500: #8A8A93;
+      --grey-600: #5B5A61;
+      --radius-xl: 28px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--grey-100);
+      color: var(--black);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr) 500px;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      height: 100vh;
+      background: var(--grey-100);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      border-right: 1px solid var(--grey-200);
+    }
+
+    .workspace-switcher { height: 88px; display: grid; place-items: center; }
+    .workspace-avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      border: 1px solid #BDBDC4;
+      background: #59F0A0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .workspace-avatar::after {
+      content: "";
+      position: absolute;
+      right: -15px;
+      bottom: -15px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--black);
+    }
+
+    .sidebar-nav { display: flex; flex-direction: column; align-items: center; gap: 22px; padding-top: 28px; }
+    .add-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid #9D9DA5;
+      color: var(--black);
+      display: grid;
+      place-items: center;
+    }
+
+    .add-btn svg { width: 23px; height: 23px; stroke: currentColor; stroke-width: 2; }
+    .nav-item { width: 100%; display: grid; place-items: center; gap: 4px; color: #B7B7C0; font-size: 13px; text-decoration: none; }
+    .nav-icon { width: 40px; height: 40px; border-radius: 9px; display: grid; place-items: center; color: currentColor; position: relative; }
+    .nav-item.active { color: var(--black); font-weight: 650; }
+    .nav-item.active .nav-icon { background: var(--yellow); color: #fff; }
+    .nav-icon svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-icon svg.filled { fill: currentColor; stroke: none; }
+    .beta { position: absolute; top: -8px; right: -8px; font-size: 8px; line-height: 1; font-weight: 750; color: var(--black); background: #fff; border: 1px solid var(--grey-300); border-radius: 999px; padding: 3px 6px; }
+    .sidebar-bottom { display: flex; justify-content: space-around; align-items: center; padding: 18px; border-top: 1px solid var(--grey-200); }
+    .sidebar-bottom svg { width: 21px; height: 21px; stroke: #777780; fill: none; stroke-width: 1.6; }
+
+    .main {
+      height: 100vh;
+      overflow: hidden;
+      background: #fff;
+      border-radius: 0 0 0 var(--radius-xl);
+      padding: 30px 30px 28px;
+    }
+
+    .breadcrumb { display: flex; align-items: center; gap: 8px; color: var(--grey-500); font-size: 15px; }
+    .folder-chip { width: 28px; height: 28px; border-radius: 6px; background: var(--yellow); color: #fff; display: grid; place-items: center; }
+    .folder-chip svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .breadcrumb b { color: var(--black); }
+
+    .project-header { max-width: 1080px; margin: 54px auto 0; }
+    .cover-action { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 650; margin-bottom: 18px; }
+    .cover-action svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+    h1 { margin: 0; font-size: 28px; line-height: 1.1; letter-spacing: -0.04em; }
+    .meta { margin-top: 13px; color: var(--grey-500); font-size: 13px; }
+    .description { margin-top: 34px; font-size: 14px; color: #3F3E45; }
+
+    .track-table-wrap { max-width: 1080px; margin: 44px auto 0; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th { height: 42px; border-bottom: 1px solid var(--grey-300); text-align: left; font-size: 16px; font-weight: 750; }
+    td { height: 54px; color: #303038; font-size: 14px; }
+    th:first-child, td:first-child { width: 36px; }
+    th:nth-child(2), td:nth-child(2) { width: 54%; }
+    th:nth-child(4), td:nth-child(4) { width: 64px; text-align: right; }
+    .check { width: 14px; height: 14px; border-radius: 3px; border: 2px solid #D0D0D5; display: inline-block; }
+    .track-cell { display: flex; align-items: center; gap: 10px; }
+    .track-index { width: 26px; text-align: right; color: #3F3E45; }
+    .cover { width: 40px; height: 40px; border-radius: 4px; background: var(--grey-200); overflow: hidden; flex: none; }
+    .cover img { width: 100%; height: 100%; object-fit: cover; }
+    .track-title { font-weight: 700; }
+    .track-sub { color: var(--grey-500); margin-top: 2px; }
+
+    .activity-panel {
+      height: 100vh;
+      background: #fff;
+      border-left: 1px solid var(--grey-200);
+      padding: 22px 24px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+    .panel-title { margin: 0; font-size: 17px; line-height: 1.2; font-weight: 750; letter-spacing: -0.02em; }
+    .close-btn { width: 32px; height: 32px; border: 0; background: transparent; color: var(--black); display: grid; place-items: center; }
+    .close-btn svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 2; }
+
+    .pro-card {
+      border: 1px solid rgba(52, 68, 212, 0.22);
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .pro-card-top { display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: start; }
+    .analytics-emblem,
+    .diamond-emblem {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #EEF1FF;
+      color: var(--blue);
+      border: 1px solid rgba(52, 68, 212, 0.18);
+      display: grid;
+      place-items: center;
+    }
+    .analytics-emblem svg, .diamond-emblem svg { width: 20px; height: 20px; }
+    .pro-label { display: inline-flex; height: 16px; padding: 0 6px; border-radius: 4px; align-items: center; background: var(--blue); color: #fff; font-size: 9px; font-weight: 800; letter-spacing: .02em; margin-bottom: 4px; }
+    .pro-card h2 { margin: 0; font-size: 16px; line-height: 1.12; letter-spacing: -0.025em; }
+    .pro-copy { margin: 4px 0 0; color: var(--grey-600); font-size: 12px; line-height: 1.25; }
+
+    .value-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--grey-200); }
+    .value-item { display: grid; grid-template-columns: 22px 1fr; align-items: center; gap: 7px; min-height: 28px; font-size: 11.5px; font-weight: 650; color: #3F3E45; }
+    .value-icon { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; background: #EEF1FF; color: var(--blue); }
+    .value-icon svg { width: 13px; height: 13px; color: currentColor; }
+    .value-icon svg path { fill: currentColor; }
+
+    .upgrade-btn {
+      height: 36px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 750;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .upgrade-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .report-copy { color: var(--grey-500); font-size: 12.5px; line-height: 1.25; margin: 0 0 10px; }
+    .filters { display: flex; gap: 8px; margin-bottom: 14px; }
+    .filter-pill { height: 30px; padding: 0 12px; border-radius: 6px; background: var(--grey-50); border: 1px solid transparent; display: inline-flex; align-items: center; gap: 7px; font-size: 13px; }
+    .filter-pill svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+    .activity-feed { position: relative; flex: 1; min-height: 0; overflow: hidden; padding-bottom: 16px; }
+    .activity-date { margin: 12px 0 7px; color: var(--blue); font-size: 13px; font-weight: 750; }
+    .activity-row { display: grid; grid-template-columns: 42px 32px 1fr; gap: 8px; align-items: start; min-height: 44px; }
+    .time { color: var(--grey-500); font-size: 12px; padding-top: 7px; text-align: right; }
+    .event-icon { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; }
+    .event-icon.opened { background: var(--pink-soft); color: var(--pink); }
+    .event-icon.streamed { background: var(--purple-soft); color: var(--purple); }
+    .event-icon.downloaded { background: #FFF4D8; color: #E0A200; }
+    .event-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .event-title { font-size: 13px; line-height: 1.18; }
+    .event-title b { font-weight: 750; }
+    .event-user { color: var(--grey-500); font-size: 11.5px; margin-top: 1px; }
+    .premium-lock-area {
+      position: relative;
+      min-height: 216px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .premium-blurred-stack {
+      filter: blur(4px);
+      opacity: .44;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .premium-blurred { filter: none; opacity: 1; }
+
+    .locked-overlay {
+      position: absolute;
+      z-index: 2;
+      top: 18px;
+      left: 50%;
+      width: calc(100% - 56px);
+      max-width: 320px;
+      transform: translateX(-50%);
+      pointer-events: auto;
+    }
+
+    .unlock-message {
+      background: rgba(255,255,255,.94);
+      border: 1px solid var(--grey-200);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: left;
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+    .unlock-diamond {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--blue);
+      border: 1px solid var(--blue);
+      color: #fff;
+      display: block;
+      position: relative;
+      flex: none;
+      overflow: hidden;
+    }
+
+    .unlock-diamond svg {
+      width: 19px;
+      height: 19px;
+      display: block;
+      color: #fff;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      overflow: visible;
+    }
+
+    .unlock-diamond svg path { fill: currentColor; }
+    .unlock-message strong { display: block; font-size: 12.5px; margin-bottom: 2px; }
+    .unlock-message span { display: block; color: var(--grey-600); font-size: 11.5px; line-height: 1.22; }
+    .unlock-message .upgrade-btn { grid-column: 1 / -1; margin-top: 8px; height: 34px; }
+
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 78px minmax(0, 1fr) 430px; }
+      .project-header, .track-table-wrap { margin-left: 42px; margin-right: 42px; }
+      .value-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 900px) {
+      .app { display: block; overflow: visible; }
+      .sidebar { display: none; }
+      .main { height: auto; min-height: 56vh; border-radius: 0; padding: 18px; }
+      .project-header, .track-table-wrap { margin-left: 0; margin-right: 0; }
+      .activity-panel { height: auto; min-height: 620px; border-left: 0; border-top: 1px solid var(--grey-200); padding: 18px; }
+    }
+
+    @media (max-width: 560px) {
+      .main { padding: 14px; }
+      .activity-panel { padding: 14px; }
+      .value-grid { grid-template-columns: 1fr; }
+      .filters { flex-wrap: wrap; }
+      table { min-width: 760px; }
+      .track-table-wrap { overflow-x: auto; }
+    }
+  </style>
 </head>
 <body>
-<div class="app">
-  <aside class="side">
-    <div class="logo"></div>
-    <div class="plus">+</div>
-    <nav class="nav">
-      <a href="#"><div class="ico">♫</div><span>Library</span></a>
-      <a class="active" href="#"><div class="ico">▰</div><span>Projects</span></a>
-      <a href="#"><div class="ico">⌯</div><span>Shared</span></a>
-      <a href="#"><div class="ico">▱</div><span>Received</span></a>
-      <a href="#"><div class="ico">◔</div><span>Analytics</span></a>
-    </nav>
-    <div class="grow"></div>
-    <div class="miniBottom">⚙︎ ♙</div>
-  </aside>
-
-  <header class="header">
-    <div class="crumb"><span class="crumbIcon">▰</span><span>Projects /</span><strong>[Sync] Brief Nike</strong></div>
-    <div class="headActions"><button class="roundBtn">?</button><button class="roundBtn">●</button><div class="avatar">CS</div></div>
-  </header>
-
-  <main class="main">
-    <section class="project">
-      <div class="hero"><span>Just Do It.</span></div>
-      <h1>[Sync] Brief Nike</h1>
-      <div class="meta">5 tracks • 16 min 47 sec • Updated 2 weeks ago</div>
-      <div class="copy">
-        <p>We have identified three musical directions that align with the rhythm and aesthetics of this advertisement. The goal is to select music that feels powerful while staying true to the brand’s identity.</p>
-        <p>Rock & Electro, Pop and Trailer Music directions are available in the project folders. For any request, reach us at <a href="#">contact@supervision.com</a>.</p>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="workspace-switcher"><div class="workspace-avatar" aria-hidden="true"></div></div>
+      <div class="sidebar-nav">
+        <button class="add-btn" aria-label="Create new"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+        <a class="nav-item" href="#"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="m9 9 10.5-3v9.75a2.25 2.25 0 0 1-1.63 2.16l-1.32.38a1.8 1.8 0 1 1-.99-3.47l2.31-.66a2.25 2.25 0 0 0 1.63-2.16"/><path d="M9 5.25v10.3a2.25 2.25 0 0 1-1.63 2.16l-1.32.38a1.8 1.8 0 1 1-.99-3.47l2.31-.66A2.25 2.25 0 0 0 9 11.8"/></svg></span>Library</a>
+        <a class="nav-item active" href="#"><span class="nav-icon"><svg class="filled" viewBox="0 0 24 24"><path d="M19.5 21a3 3 0 0 0 3-3v-4.5a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3V18a3 3 0 0 0 3 3h15ZM1.5 10.146V6a3 3 0 0 1 3-3h5.379a2.25 2.25 0 0 1 1.59.659l2.122 2.121c.14.141.331.22.53.22H19.5a3 3 0 0 1 3 3v1.146A4.483 4.483 0 0 0 19.5 9h-15a4.483 4.483 0 0 0-3 1.146Z"/></svg></span>Projects</a>
+        <a class="nav-item" href="#"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M7.2 10.9a2.25 2.25 0 1 0 0 2.2m0-2.2 9.6-5.3m-9.6 7.5 9.6 5.3"/><circle cx="18.75" cy="4.5" r="2.25"/><circle cx="18.75" cy="19.5" r="2.25"/><circle cx="5.25" cy="12" r="2.25"/></svg></span>Shared</a>
+        <a class="nav-item" href="#"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.01 1.24l.26.52a2.25 2.25 0 0 0 2.01 1.24h3.22a2.25 2.25 0 0 0 2.01-1.24l.26-.52a2.25 2.25 0 0 1 2.01-1.24h3.86"/><path d="M2.25 13.84V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.16c0-.22-.03-.45-.1-.66l-2.41-7.84a2.25 2.25 0 0 0-2.15-1.59H6.91a2.25 2.25 0 0 0-2.15 1.59l-2.41 7.84c-.07.21-.1.44-.1.66Z"/></svg></span>Received</a>
+        <a class="nav-item" href="#"><span class="nav-icon"><span class="beta">BETA</span><svg viewBox="0 0 24 24"><path d="M3 13.5A8.5 8.5 0 0 1 11.5 5v8h8A8.5 8.5 0 1 1 3 13.5Z"/><path d="M13.5 3A7.5 7.5 0 0 1 21 10.5h-7.5V3Z"/></svg></span>Analytics</a>
       </div>
-    </section>
+      <div class="sidebar-bottom"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33"/><path d="M9 4.6a1.65 1.65 0 0 0-1.82-.33l-.06.06A2 2 0 1 1 4.29 7.16l.06.06A1.65 1.65 0 0 0 4.6 9"/></svg><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></div>
+    </aside>
 
-    <aside class="drawer">
-      <div class="drawerHead">
-        <div class="drawerTitle">Activity Insights <span class="proBadge"><img src="data:image/svg+xml;utf8,%3Csvg%20width%3D%2221%22%20height%3D%2220%22%20viewBox%3D%220%200%2021%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%0A%3Cg%20clip-path%3D%22url%28%23clip0_33277_11145%29%22%3E%0A%3Cpath%20d%3D%22M5.26953%201.36719L6.35156%203.74805L8.18555%204.58203H15.7246L15.8096%204.58691C16.005%204.61152%2016.1821%204.72048%2016.293%204.88672L19.0273%208.98828C19.197%209.24307%2019.1768%209.58007%2018.9775%209.8125L10.7744%2019.3828C10.6425%2019.5365%2010.4486%2019.6238%2010.2461%2019.6211C10.0434%2019.6181%209.85124%2019.5256%209.72363%2019.3682L1.97656%209.79785C1.80124%209.58124%201.77502%209.27883%201.91016%209.03516L3.0498%206.98438L3.19824%206.71484L0.945312%205.69141L0%205.26172L0.945312%204.83203L3.32715%203.74902L4.41016%201.36719L4.83984%200.421875L5.26953%201.36719ZM8.93555%209.35742L7.48242%2010.0176L8.93555%2010.6787L9.59668%2012.1318L10.2568%2010.6787L11.7109%2010.0176L10.2568%209.35742L9.59668%207.9043L8.93555%209.35742ZM4.11426%204.30176L4.04102%204.46289L3.87988%204.53613L2.28125%205.26172L3.87988%205.98828L4.04102%206.06152L4.11426%206.22266L4.83984%207.82031L5.56641%206.22266L5.63965%206.06152L5.80078%205.98828L7.39844%205.26172L5.80078%204.53613L5.63965%204.46289L5.56641%204.30176L4.83984%202.70312L4.11426%204.30176Z%22%20fill%3D%22%232F43DE%22/%3E%0A%3Cpath%20d%3D%22M5.26953%201.36719L6.35156%203.74805L8.18555%204.58203H15.7246L15.8096%204.58691C16.005%204.61152%2016.1821%204.72048%2016.293%204.88672L19.0273%208.98828C19.197%209.24307%2019.1768%209.58007%2018.9775%209.8125L10.7744%2019.3828C10.6425%2019.5365%2010.4486%2019.6238%2010.2461%2019.6211C10.0434%2019.6181%209.85124%2019.5256%209.72363%2019.3682L1.97656%209.79785C1.80124%209.58124%201.77502%209.27883%201.91016%209.03516L3.0498%206.98438L3.19824%206.71484L0.945312%205.69141L0%205.26172L0.945312%204.83203L3.32715%203.74902L4.41016%201.36719L4.83984%200.421875L5.26953%201.36719ZM8.93555%209.35742L7.48242%2010.0176L8.93555%2010.6787L9.59668%2012.1318L10.2568%2010.6787L11.7109%2010.0176L10.2568%209.35742L9.59668%207.9043L8.93555%209.35742ZM4.11426%204.30176L4.04102%204.46289L3.87988%204.53613L2.28125%205.26172L3.87988%205.98828L4.04102%206.06152L4.11426%206.22266L4.83984%207.82031L5.56641%206.22266L5.63965%206.06152L5.80078%205.98828L7.39844%205.26172L5.80078%204.53613L5.63965%204.46289L5.56641%204.30176L4.83984%202.70312L4.11426%204.30176Z%22%20fill%3D%22url%28%23paint0_linear_33277_11145%29%22/%3E%0A%3C/g%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22paint0_linear_33277_11145%22%20x1%3D%22-7.44105%22%20y1%3D%220.400929%22%20x2%3D%2218.7489%22%20y2%3D%223.83733%22%20gradientUnits%3D%22userSpaceOnUse%22%3E%0A%3Cstop%20offset%3D%221%22%20stop-color%3D%22%232F43DE%22/%3E%0A%3C/linearGradient%3E%0A%3CclipPath%20id%3D%22clip0_33277_11145%22%3E%0A%3Crect%20width%3D%2219.142%22%20height%3D%2219.1993%22%20fill%3D%22white%22%20transform%3D%22translate%280%200.421875%29%22/%3E%0A%3C/clipPath%3E%0A%3C/defs%3E%0A%3C/svg%3E%0A">Pro</span></div>
-        <button class="close">×</button>
+    <main class="main">
+      <div class="breadcrumb"><span class="folder-chip"><svg viewBox="0 0 24 24"><path d="M3 7h6l2 2h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 7V5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2"/></svg></span><span>Projects / <b>Pour Seb</b></span></div>
+      <section class="project-header">
+        <div class="cover-action"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="10" r="1.5"/><path d="m21 15-5-5L5 19"/></svg>Add cover picture</div>
+        <h1>Pour Seb</h1>
+        <div class="meta">14 tracks • 49 min 48 sec • Updated 1 week ago</div>
+        <div class="description">Click to add a description...</div>
+      </section>
+
+      <section class="track-table-wrap">
+        <table>
+          <thead><tr><th><span class="check"></span></th><th>Track (14)</th><th>Album</th><th>◷</th></tr></thead>
+          <tbody>
+            <tr><td><span class="check"></span></td><td><div class="track-cell"><span class="track-index">1</span><div class="cover"><img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=120&auto=format&fit=crop" alt=""></div><div><div class="track-title">Destiny</div><div class="track-sub">The Joubert Singers</div></div></div></td><td>Stand On The Word</td><td>3:58</td></tr>
+            <tr><td><span class="check"></span></td><td><div class="track-cell"><span class="track-index">2</span><div class="cover"><img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=120&auto=format&fit=crop" alt=""></div><div><div class="track-title">Party Like a Human</div><div class="track-sub">General Elektriks</div></div></div></td><td>Party Like a Human</td><td>4:49</td></tr>
+            <tr><td><span class="check"></span></td><td><div class="track-cell"><span class="track-index">3</span><div class="cover"><img src="https://images.unsplash.com/photo-1496293455970-f8581aae0e3b?q=80&w=120&auto=format&fit=crop" alt=""></div><div><div class="track-title">Copacabana</div><div class="track-sub">Salomé de Bahia</div></div></div></td><td>Yellow Productions : A French Touch by ...</td><td>4:19</td></tr>
+            <tr><td><span class="check"></span></td><td><div class="track-cell"><span class="track-index">4</span><div class="cover"><img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=120&auto=format&fit=crop" alt=""></div><div><div class="track-title">Lush Life</div><div class="track-sub">Zara Larsson</div></div></div></td><td>So Good</td><td>3:20</td></tr>
+            <tr><td><span class="check"></span></td><td><div class="track-cell"><span class="track-index">5</span><div class="cover"><img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=120&auto=format&fit=crop" alt=""></div><div><div class="track-title">Something New</div><div class="track-sub">Tiggs Da Author</div></div></div></td><td>Something New</td><td>2:55</td></tr>
+            <tr><td><span class="check"></span></td><td><div class="track-cell"><span class="track-index">6</span><div class="cover"><img src="https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?q=80&w=120&auto=format&fit=crop" alt=""></div><div><div class="track-title">A Certain Life</div><div class="track-sub">Yuksek</div></div></div></td><td>Away From The Sea</td><td>3:00</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <aside class="activity-panel" aria-label="Activity report">
+      <header class="panel-header">
+        <h2 class="panel-title">Activity report Pour Seb</h2>
+        <button class="close-btn" aria-label="Close activity report"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </header>
+
+      <section class="pro-card" aria-label="Upgrade to Pro">
+        <div class="pro-card-top">
+          <div class="analytics-emblem" aria-hidden="true">
+            <svg aria-hidden="true"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M3 6C3 4.34315 4.34315 3 6 3H18C19.6569 3 21 4.34315 21 6V18C21 19.6569 19.6569 21 18 21H6C4.34315 21 3 19.6569 3 18V6ZM7.5 13.5C7.91421 13.5 8.25 13.8358 8.25 14.25V16.5C8.25 16.9142 7.91421 17.25 7.5 17.25C7.08579 17.25 6.75 16.9142 6.75 16.5V14.25C6.75 13.8358 7.08579 13.5 7.5 13.5ZM11.25 12C11.25 11.5858 10.9142 11.25 10.5 11.25C10.0858 11.25 9.75 11.5858 9.75 12V16.5C9.75 16.9142 10.0858 17.25 10.5 17.25C10.9142 17.25 11.25 16.9142 11.25 16.5V12ZM13.5 9C13.9142 9 14.25 9.33579 14.25 9.75V16.5C14.25 16.9142 13.9142 17.25 13.5 17.25C13.0858 17.25 12.75 16.9142 12.75 16.5V9.75C12.75 9.33579 13.0858 9 13.5 9ZM17.25 7.5C17.25 7.08579 16.9142 6.75 16.5 6.75C16.0858 6.75 15.75 7.08579 15.75 7.5V16.5C15.75 16.9142 16.0858 17.25 16.5 17.25C16.9142 17.25 17.25 16.9142 17.25 16.5V7.5Z" fill="currentColor"/>
+</svg>
+          </div>
+          <div>
+            <span class="pro-label">PRO</span>
+            <h2>See who engages with your music</h2>
+            <p class="pro-copy">Streams, downloads, opens, shares and engagement analytics.</p>
+          </div>
+        </div>
+
+        <div class="value-grid">
+          <div class="value-item"><span class="value-icon"><svg aria-hidden="true"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M3 6C3 4.34315 4.34315 3 6 3H18C19.6569 3 21 4.34315 21 6V18C21 19.6569 19.6569 21 18 21H6C4.34315 21 3 19.6569 3 18V6ZM7.5 13.5C7.91421 13.5 8.25 13.8358 8.25 14.25V16.5C8.25 16.9142 7.91421 17.25 7.5 17.25C7.08579 17.25 6.75 16.9142 6.75 16.5V14.25C6.75 13.8358 7.08579 13.5 7.5 13.5ZM11.25 12C11.25 11.5858 10.9142 11.25 10.5 11.25C10.0858 11.25 9.75 11.5858 9.75 12V16.5C9.75 16.9142 10.0858 17.25 10.5 17.25C10.9142 17.25 11.25 16.9142 11.25 16.5V12ZM13.5 9C13.9142 9 14.25 9.33579 14.25 9.75V16.5C14.25 16.9142 13.9142 17.25 13.5 17.25C13.0858 17.25 12.75 16.9142 12.75 16.5V9.75C12.75 9.33579 13.0858 9 13.5 9ZM17.25 7.5C17.25 7.08579 16.9142 6.75 16.5 6.75C16.0858 6.75 15.75 7.08579 15.75 7.5V16.5C15.75 16.9142 16.0858 17.25 16.5 17.25C16.9142 17.25 17.25 16.9142 17.25 16.5V7.5Z" fill="currentColor"/>
+</svg></span><span>Activity analytics</span></div>
+          <div class="value-item"><span class="value-icon"><svg aria-hidden="true"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 9.75C4.5 6.43629 7.18629 3.75 10.5 3.75C13.028 3.75 15.1893 5.31282 16.0733 7.52408C16.2135 7.50816 16.3559 7.5 16.5 7.5C18.5711 7.5 20.25 9.17893 20.25 11.25C20.25 11.4459 20.2349 11.6386 20.2058 11.827C21.5744 12.5981 22.5 14.0653 22.5 15.75C22.5 18.2353 20.4853 20.25 18 20.25H6.75C3.85051 20.25 1.5 17.8995 1.5 15C1.5 12.8968 2.73627 11.084 4.52024 10.2459C4.50683 10.0822 4.5 9.91686 4.5 9.75Z" fill="currentColor"/>
+</svg></span><span>More storage</span></div>
+          <div class="value-item"><span class="value-icon"><svg aria-hidden="true"  viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6.875 5.625C6.875 3.89911 8.27411 2.5 10 2.5C11.7259 2.5 13.125 3.89911 13.125 5.625C13.125 7.35089 11.7259 8.75 10 8.75C8.27411 8.75 6.875 7.35089 6.875 5.625Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M13.125 8.125C13.125 6.74429 14.2443 5.625 15.625 5.625C17.0057 5.625 18.125 6.74429 18.125 8.125C18.125 9.50571 17.0057 10.625 15.625 10.625C14.2443 10.625 13.125 9.50571 13.125 8.125Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1.875 8.125C1.875 6.74429 2.99429 5.625 4.375 5.625C5.75571 5.625 6.875 6.74429 6.875 8.125C6.875 9.50571 5.75571 10.625 4.375 10.625C2.99429 10.625 1.875 9.50571 1.875 8.125Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M5.25822 12.5979C6.25653 11.037 8.00696 10 10 10C11.9933 10 13.7439 11.0373 14.7422 12.5985C15.4323 13.6779 15.7309 14.9793 15.5908 16.2483C15.5689 16.4466 15.4537 16.6225 15.2806 16.7218C13.7245 17.6147 11.9209 18.125 10 18.125C8.0791 18.125 6.27549 17.6147 4.71937 16.7218C4.54633 16.6225 4.43108 16.4466 4.40919 16.2483C4.26911 14.9791 4.56784 13.6774 5.25822 12.5979Z" fill="currentColor"/>
+<path d="M4.23524 11.8781C4.2252 11.8935 4.21523 11.9089 4.20531 11.9244C3.40076 13.1824 3.03257 14.6806 3.14559 16.1575C2.63889 16.0805 2.14725 15.9567 1.67536 15.7906L1.57956 15.7568C1.4048 15.6953 1.28269 15.5366 1.26799 15.3519L1.25994 15.2506C1.25335 15.1678 1.25 15.0842 1.25 15C1.25 13.3209 2.5742 11.9512 4.23524 11.8781Z" fill="currentColor"/>
+<path d="M16.8547 16.1575C16.9677 14.6808 16.5997 13.183 15.7954 11.9251C15.7854 11.9094 15.7753 11.8937 15.7651 11.8781C17.426 11.9513 18.75 13.321 18.75 15C18.75 15.0842 18.7467 15.1678 18.7401 15.2506L18.732 15.3519C18.7173 15.5366 18.5952 15.6953 18.4204 15.7568L18.3246 15.7906C17.8528 15.9567 17.3613 16.0805 16.8547 16.1575Z" fill="currentColor"/>
+</svg></span><span>More seats</span></div>
+          <div class="value-item"><span class="value-icon"><svg aria-hidden="true"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.47804 2.4043C3.2133 2.3274 2.92771 2.40193 2.73432 2.5984C2.54093 2.79487 2.47091 3.0816 2.55198 3.3451L4.98426 11.25H13.5C13.9142 11.25 14.25 11.5858 14.25 12C14.25 12.4142 13.9142 12.75 13.5 12.75H4.98427L2.55207 20.6546C2.471 20.9181 2.54102 21.2049 2.73441 21.4013C2.92781 21.5978 3.2134 21.6723 3.47814 21.5954C10.1767 19.6494 16.3974 16.5814 21.9233 12.6087C22.1193 12.4678 22.2355 12.2412 22.2355 11.9998C22.2355 11.7583 22.1193 11.5317 21.9233 11.3908C16.3974 7.41817 10.1767 4.35021 3.47804 2.4043Z" fill="currentColor"/>
+</svg></span><span>Advanced sharing</span></div>
+          <div class="value-item"><span class="value-icon"><svg aria-hidden="true"  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1.32341 11.4467C2.81066 6.97571 7.02791 3.75 12.0005 3.75C16.9708 3.75 21.1864 6.97271 22.6755 11.4405C22.7959 11.8015 22.796 12.1922 22.6759 12.5533C21.1886 17.0243 16.9714 20.25 11.9988 20.25C7.02847 20.25 2.81284 17.0273 1.32374 12.5595C1.2034 12.1985 1.20328 11.8078 1.32341 11.4467ZM17.25 12C17.25 14.8995 14.8995 17.25 12 17.25C9.1005 17.25 6.75 14.8995 6.75 12C6.75 9.1005 9.1005 6.75 12 6.75C14.8995 6.75 17.25 9.1005 17.25 12Z" fill="currentColor"/>
+</svg></span><span>Discovery Hub exposure</span></div>
+        </div>
+
+        <a class="upgrade-btn" href="#">Turn Pro to Unlock Activity Insights <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+      </section>
+
+      <p class="report-copy">All activities recorded on the links you shared</p>
+      <div class="filters" aria-label="Activity filters">
+        <span class="filter-pill"><svg viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.8 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></svg>Type</span>
+        <span class="filter-pill"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Date</span>
+        <span class="filter-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a6 6 0 0 1 12 0v2"/></svg>Link</span>
       </div>
-      <div class="drawerBody">
-        <div class="limitNote"><img src="data:image/svg+xml;utf8,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%0A%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M3%206C3%204.34315%204.34315%203%206%203H18C19.6569%203%2021%204.34315%2021%206V18C21%2019.6569%2019.6569%2021%2018%2021H6C4.34315%2021%203%2019.6569%203%2018V6ZM7.5%2013.5C7.91421%2013.5%208.25%2013.8358%208.25%2014.25V16.5C8.25%2016.9142%207.91421%2017.25%207.5%2017.25C7.08579%2017.25%206.75%2016.9142%206.75%2016.5V14.25C6.75%2013.8358%207.08579%2013.5%207.5%2013.5ZM11.25%2012C11.25%2011.5858%2010.9142%2011.25%2010.5%2011.25C10.0858%2011.25%209.75%2011.5858%209.75%2012V16.5C9.75%2016.9142%2010.0858%2017.25%2010.5%2017.25C10.9142%2017.25%2011.25%2016.9142%2011.25%2016.5V12ZM13.5%209C13.9142%209%2014.25%209.33579%2014.25%209.75V16.5C14.25%2016.9142%2013.9142%2017.25%2013.5%2017.25C13.0858%2017.25%2012.75%2016.9142%2012.75%2016.5V9.75C12.75%209.33579%2013.0858%209%2013.5%209ZM17.25%207.5C17.25%207.08579%2016.9142%206.75%2016.5%206.75C16.0858%206.75%2015.75%207.08579%2015.75%207.5V16.5C15.75%2016.9142%2016.0858%2017.25%2016.5%2017.25C16.9142%2017.25%2017.25%2016.9142%2017.25%2016.5V7.5Z%22%20fill%3D%22%231E1D20%22/%3E%0A%3C/svg%3E%0A"><div><strong>Free preview:</strong> the first 3 activities are visible on your 3 most recent projects. Upgrade to unlock full history across your workspace.</div></div>
 
-        <div class="kpis">
-          <div class="kpi"><div class="num">23</div><div class="label">Views</div></div>
-          <div class="kpi"><div class="num">12</div><div class="label">Streams</div></div>
-          <div class="kpi"><div class="num">4</div><div class="label">Engaged</div></div>
-        </div>
+      <div class="activity-feed preview-only">
+        <div class="activity-date">Monday, 15 June 2026</div>
+        <div class="activity-row"><div class="time">10:51</div><div class="event-icon opened"><svg viewBox="0 0 24 24"><path d="M3 7h6l2 2h10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 7V5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2"/></svg></div><div><div class="event-title">Opened <b>“Pour Seb”</b></div><div class="event-user">Seb</div></div></div>
+        <div class="activity-date">Thursday, 11 June 2026</div>
+        <div class="activity-row"><div class="time">21:33</div><div class="event-icon downloaded"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></div><div><div class="event-title">Downloaded in original quality <b>“Summer Jam”</b></div><div class="event-user">Seb</div></div></div>
+        <div class="activity-date">Wednesday, 10 June 2026</div>
+        <div class="activity-row"><div class="time">16:32</div><div class="event-icon streamed"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div><div class="event-title">Streamed <b>“Destiny”</b></div><div class="event-user">Seb</div></div></div>
 
-        <div class="sectionTitle"><h2>Recent activity</h2><span class="freeTag">3 visible</span></div>
-        <div class="timeline">
-          <div class="activity"><div class="av blue">SB</div><div class="actMain"><div class="actTitle">Seb opened “[Sync] Brief Nike”</div><div class="actSub">Viewed the project page</div></div><div class="time">2h ago</div></div>
-          <div class="activity"><div class="av green">CL</div><div class="actMain"><div class="actTitle">Clément streamed 3 tracks</div><div class="actSub">Rock & Electro folder</div></div><div class="time">1d ago</div></div>
-          <div class="activity"><div class="av yellow">AP</div><div class="actMain"><div class="actTitle">Apem opened the project</div><div class="actSub">Returned from shared link</div></div><div class="time">2d ago</div></div>
-        </div>
-
-        <div class="hiddenDivider"><span>+18 hidden activities</span></div>
-
-        <div class="lockedRows">
-          <div class="activity locked"><div class="av blue">••</div><div class="actMain"><div class="actTitle">Hidden contact opened project</div><div class="actSub">Identity available in Pro</div></div><div class="time">3d ago</div></div>
-          <div class="activity locked"><div class="av green">••</div><div class="actMain"><div class="actTitle">Hidden contact streamed tracks</div><div class="actSub">Track-level insights available</div></div><div class="time">4d ago</div></div>
-          <div class="activity locked"><div class="av yellow">••</div><div class="actMain"><div class="actTitle">Hidden contact engaged</div><div class="actSub">Engagement timeline available</div></div><div class="time">5d ago</div></div>
-        </div>
-
-        <section class="paywall">
-          <div class="payTop">
-            <div class="diamondBubble"><img src="data:image/svg+xml;utf8,%3Csvg%20width%3D%2221%22%20height%3D%2220%22%20viewBox%3D%220%200%2021%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%0A%3Cg%20clip-path%3D%22url%28%23clip0_33277_11145%29%22%3E%0A%3Cpath%20d%3D%22M5.26953%201.36719L6.35156%203.74805L8.18555%204.58203H15.7246L15.8096%204.58691C16.005%204.61152%2016.1821%204.72048%2016.293%204.88672L19.0273%208.98828C19.197%209.24307%2019.1768%209.58007%2018.9775%209.8125L10.7744%2019.3828C10.6425%2019.5365%2010.4486%2019.6238%2010.2461%2019.6211C10.0434%2019.6181%209.85124%2019.5256%209.72363%2019.3682L1.97656%209.79785C1.80124%209.58124%201.77502%209.27883%201.91016%209.03516L3.0498%206.98438L3.19824%206.71484L0.945312%205.69141L0%205.26172L0.945312%204.83203L3.32715%203.74902L4.41016%201.36719L4.83984%200.421875L5.26953%201.36719ZM8.93555%209.35742L7.48242%2010.0176L8.93555%2010.6787L9.59668%2012.1318L10.2568%2010.6787L11.7109%2010.0176L10.2568%209.35742L9.59668%207.9043L8.93555%209.35742ZM4.11426%204.30176L4.04102%204.46289L3.87988%204.53613L2.28125%205.26172L3.87988%205.98828L4.04102%206.06152L4.11426%206.22266L4.83984%207.82031L5.56641%206.22266L5.63965%206.06152L5.80078%205.98828L7.39844%205.26172L5.80078%204.53613L5.63965%204.46289L5.56641%204.30176L4.83984%202.70312L4.11426%204.30176Z%22%20fill%3D%22%232F43DE%22/%3E%0A%3Cpath%20d%3D%22M5.26953%201.36719L6.35156%203.74805L8.18555%204.58203H15.7246L15.8096%204.58691C16.005%204.61152%2016.1821%204.72048%2016.293%204.88672L19.0273%208.98828C19.197%209.24307%2019.1768%209.58007%2018.9775%209.8125L10.7744%2019.3828C10.6425%2019.5365%2010.4486%2019.6238%2010.2461%2019.6211C10.0434%2019.6181%209.85124%2019.5256%209.72363%2019.3682L1.97656%209.79785C1.80124%209.58124%201.77502%209.27883%201.91016%209.03516L3.0498%206.98438L3.19824%206.71484L0.945312%205.69141L0%205.26172L0.945312%204.83203L3.32715%203.74902L4.41016%201.36719L4.83984%200.421875L5.26953%201.36719ZM8.93555%209.35742L7.48242%2010.0176L8.93555%2010.6787L9.59668%2012.1318L10.2568%2010.6787L11.7109%2010.0176L10.2568%209.35742L9.59668%207.9043L8.93555%209.35742ZM4.11426%204.30176L4.04102%204.46289L3.87988%204.53613L2.28125%205.26172L3.87988%205.98828L4.04102%206.06152L4.11426%206.22266L4.83984%207.82031L5.56641%206.22266L5.63965%206.06152L5.80078%205.98828L7.39844%205.26172L5.80078%204.53613L5.63965%204.46289L5.56641%204.30176L4.83984%202.70312L4.11426%204.30176Z%22%20fill%3D%22url%28%23paint0_linear_33277_11145%29%22/%3E%0A%3C/g%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22paint0_linear_33277_11145%22%20x1%3D%22-7.44105%22%20y1%3D%220.400929%22%20x2%3D%2218.7489%22%20y2%3D%223.83733%22%20gradientUnits%3D%22userSpaceOnUse%22%3E%0A%3Cstop%20offset%3D%221%22%20stop-color%3D%22%232F43DE%22/%3E%0A%3C/linearGradient%3E%0A%3CclipPath%20id%3D%22clip0_33277_11145%22%3E%0A%3Crect%20width%3D%2219.142%22%20height%3D%2219.1993%22%20fill%3D%22white%22%20transform%3D%22translate%280%200.421875%29%22/%3E%0A%3C/clipPath%3E%0A%3C/defs%3E%0A%3C/svg%3E%0A"></div>
-            <div><h3>Unlock full activity history</h3></div>
+        <div class="premium-lock-area">
+          <div class="premium-blurred-stack" aria-hidden="true">
+            <div class="activity-row premium-blurred"><div class="time">16:32</div><div class="event-icon streamed"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div><div class="event-title">Streamed <b>“A Certain Life”</b></div><div class="event-user">Seb</div></div></div>
+            <div class="activity-row premium-blurred"><div class="time">16:32</div><div class="event-icon streamed"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div><div class="event-title">Streamed <b>“Parade”</b></div><div class="event-user">Seb</div></div></div>
+            <div class="activity-row premium-blurred"><div class="time">16:32</div><div class="event-icon streamed"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div><div class="event-title">Streamed <b>“Summer Jam”</b></div><div class="event-user">Seb</div></div></div>
+            <div class="activity-row premium-blurred"><div class="time">16:31</div><div class="event-icon streamed"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div><div class="event-title">Streamed <b>“Livin' Easy”</b></div><div class="event-user">Seb</div></div></div>
           </div>
-          <p>Know exactly who opened, streamed and engaged with your projects — plus the Pro tools that boost your whole workspace.</p>
-          <button class="cta"><img src="data:image/svg+xml;utf8,%3Csvg%20width%3D%2221%22%20height%3D%2220%22%20viewBox%3D%220%200%2021%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%0A%3Cg%20clip-path%3D%22url%28%23clip0_33277_11145%29%22%3E%0A%3Cpath%20d%3D%22M5.26953%201.36719L6.35156%203.74805L8.18555%204.58203H15.7246L15.8096%204.58691C16.005%204.61152%2016.1821%204.72048%2016.293%204.88672L19.0273%208.98828C19.197%209.24307%2019.1768%209.58007%2018.9775%209.8125L10.7744%2019.3828C10.6425%2019.5365%2010.4486%2019.6238%2010.2461%2019.6211C10.0434%2019.6181%209.85124%2019.5256%209.72363%2019.3682L1.97656%209.79785C1.80124%209.58124%201.77502%209.27883%201.91016%209.03516L3.0498%206.98438L3.19824%206.71484L0.945312%205.69141L0%205.26172L0.945312%204.83203L3.32715%203.74902L4.41016%201.36719L4.83984%200.421875L5.26953%201.36719ZM8.93555%209.35742L7.48242%2010.0176L8.93555%2010.6787L9.59668%2012.1318L10.2568%2010.6787L11.7109%2010.0176L10.2568%209.35742L9.59668%207.9043L8.93555%209.35742ZM4.11426%204.30176L4.04102%204.46289L3.87988%204.53613L2.28125%205.26172L3.87988%205.98828L4.04102%206.06152L4.11426%206.22266L4.83984%207.82031L5.56641%206.22266L5.63965%206.06152L5.80078%205.98828L7.39844%205.26172L5.80078%204.53613L5.63965%204.46289L5.56641%204.30176L4.83984%202.70312L4.11426%204.30176Z%22%20fill%3D%22%232F43DE%22/%3E%0A%3Cpath%20d%3D%22M5.26953%201.36719L6.35156%203.74805L8.18555%204.58203H15.7246L15.8096%204.58691C16.005%204.61152%2016.1821%204.72048%2016.293%204.88672L19.0273%208.98828C19.197%209.24307%2019.1768%209.58007%2018.9775%209.8125L10.7744%2019.3828C10.6425%2019.5365%2010.4486%2019.6238%2010.2461%2019.6211C10.0434%2019.6181%209.85124%2019.5256%209.72363%2019.3682L1.97656%209.79785C1.80124%209.58124%201.77502%209.27883%201.91016%209.03516L3.0498%206.98438L3.19824%206.71484L0.945312%205.69141L0%205.26172L0.945312%204.83203L3.32715%203.74902L4.41016%201.36719L4.83984%200.421875L5.26953%201.36719ZM8.93555%209.35742L7.48242%2010.0176L8.93555%2010.6787L9.59668%2012.1318L10.2568%2010.6787L11.7109%2010.0176L10.2568%209.35742L9.59668%207.9043L8.93555%209.35742ZM4.11426%204.30176L4.04102%204.46289L3.87988%204.53613L2.28125%205.26172L3.87988%205.98828L4.04102%206.06152L4.11426%206.22266L4.83984%207.82031L5.56641%206.22266L5.63965%206.06152L5.80078%205.98828L7.39844%205.26172L5.80078%204.53613L5.63965%204.46289L5.56641%204.30176L4.83984%202.70312L4.11426%204.30176Z%22%20fill%3D%22url%28%23paint0_linear_33277_11145%29%22/%3E%0A%3C/g%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22paint0_linear_33277_11145%22%20x1%3D%22-7.44105%22%20y1%3D%220.400929%22%20x2%3D%2218.7489%22%20y2%3D%223.83733%22%20gradientUnits%3D%22userSpaceOnUse%22%3E%0A%3Cstop%20offset%3D%221%22%20stop-color%3D%22%232F43DE%22/%3E%0A%3C/linearGradient%3E%0A%3CclipPath%20id%3D%22clip0_33277_11145%22%3E%0A%3Crect%20width%3D%2219.142%22%20height%3D%2219.1993%22%20fill%3D%22white%22%20transform%3D%22translate%280%200.421875%29%22/%3E%0A%3C/clipPath%3E%0A%3C/defs%3E%0A%3C/svg%3E%0A"> Upgrade to Pro</button>
 
-          <div class="features">
-            <div class="feature"><img src="data:image/svg+xml;utf8,%3Csvg%20width=%2224%22%20height=%2224%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%0A%3Cpath%20fill-rule=%22evenodd%22%20clip-rule=%22evenodd%22%20d=%22M3%206C3%204.34315%204.34315%203%206%203H18C19.6569%203%2021%204.34315%2021%206V18C21%2019.6569%2019.6569%2021%2018%2021H6C4.34315%2021%203%2019.6569%203%2018V6ZM7.5%2013.5C7.91421%2013.5%208.25%2013.8358%208.25%2014.25V16.5C8.25%2016.9142%207.91421%2017.25%207.5%2017.25C7.08579%2017.25%206.75%2016.9142%206.75%2016.5V14.25C6.75%2013.8358%207.08579%2013.5%207.5%2013.5ZM11.25%2012C11.25%2011.5858%2010.9142%2011.25%2010.5%2011.25C10.0858%2011.25%209.75%2011.5858%209.75%2012V16.5C9.75%2016.9142%2010.0858%2017.25%2010.5%2017.25C10.9142%2017.25%2011.25%2016.9142%2011.25%2016.5V12ZM13.5%209C13.9142%209%2014.25%209.33579%2014.25%209.75V16.5C14.25%2016.9142%2013.9142%2017.25%2013.5%2017.25C13.0858%2017.25%2012.75%2016.9142%2012.75%2016.5V9.75C12.75%209.33579%2013.0858%209%2013.5%209ZM17.25%207.5C17.25%207.08579%2016.9142%206.75%2016.5%206.75C16.0858%206.75%2015.75%207.08579%2015.75%207.5V16.5C15.75%2016.9142%2016.0858%2017.25%2016.5%2017.25C16.9142%2017.25%2017.25%2016.9142%2017.25%2016.5V7.5Z%22%20fill=%22%231E1D20%22/%3E%0A%3C/svg%3E%0A" alt=""><div><strong>Advanced insights</strong><span>Viewer, stream & engagement history</span></div></div>
-            <div class="feature"><img src="data:image/svg+xml;utf8,%3Csvg%20width=%2224%22%20height=%2224%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%0A%3Cpath%20d=%22M3.47804%202.4043C3.2133%202.3274%202.92771%202.40193%202.73432%202.5984C2.54093%202.79487%202.47091%203.0816%202.55198%203.3451L4.98426%2011.25H13.5C13.9142%2011.25%2014.25%2011.5858%2014.25%2012C14.25%2012.4142%2013.9142%2012.75%2013.5%2012.75H4.98427L2.55207%2020.6546C2.471%2020.9181%202.54102%2021.2049%202.73441%2021.4013C2.92781%2021.5978%203.2134%2021.6723%203.47814%2021.5954C10.1767%2019.6494%2016.3974%2016.5814%2021.9233%2012.6087C22.1193%2012.4678%2022.2355%2012.2412%2022.2355%2011.9998C22.2355%2011.7583%2022.1193%2011.5317%2021.9233%2011.3908C16.3974%207.41817%2010.1767%204.35021%203.47804%202.4043Z%22%20fill=%22%231E1D20%22/%3E%0A%3C/svg%3E%0A" alt=""><div><strong>Advanced sharing</strong><span>Control links, access and deliveries</span></div></div>
-            <div class="feature"><img src="data:image/svg+xml;utf8,%3Csvg%20width=%2224%22%20height=%2224%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%0A%3Cpath%20fill-rule=%22evenodd%22%20clip-rule=%22evenodd%22%20d=%22M9.315%207.58365C12.1956%203.88296%2016.6946%201.50021%2021.75%201.5C21.9489%201.49999%2022.1397%201.57901%2022.2803%201.71966C22.421%201.86031%2022.5%202.05108%2022.5%202.25C22.5%207.30564%2020.1173%2011.805%2016.4165%2014.6859C16.4715%2015.0329%2016.5%2015.3883%2016.5%2015.75C16.5%2019.4779%2013.4779%2022.5%209.75%2022.5C9.33579%2022.5%209%2022.1642%209%2021.75V17.6185C8.99075%2017.6118%208.98163%2017.6049%208.97264%2017.5978C8.02063%2016.8429%207.15799%2015.9803%206.40312%2015.0282C6.39577%2015.019%206.38866%2015.0096%206.38179%2015H2.25C1.83579%2015%201.5%2014.6642%201.5%2014.25C1.5%2010.5221%204.52208%207.5%208.25%207.5C8.61198%207.5%208.96772%207.52856%209.315%207.58365ZM15%206.75C13.7574%206.75%2012.75%207.75736%2012.75%209C12.75%2010.2426%2013.7574%2011.25%2015%2011.25C16.2426%2011.25%2017.25%2010.2426%2017.25%209C17.25%207.75736%2016.2426%206.75%2015%206.75Z%22%20fill=%22%231E1D20%22/%3E%0A%3Cpath%20d=%22M5.26036%2017.2418C5.59237%2016.9942%205.66074%2016.5242%205.41306%2016.1922C5.16539%2015.8602%204.69546%2015.7918%204.36345%2016.0395C3.08209%2016.9954%202.25%2018.5256%202.25%2020.2499C2.25%2020.5255%202.27129%2020.7966%202.31246%2021.0615C2.36259%2021.3842%202.61574%2021.6373%202.93842%2021.6875C3.20336%2021.7286%203.47445%2021.7499%203.75%2021.7499C5.47434%2021.7499%207.00452%2020.9178%207.9604%2019.6365C8.20808%2019.3045%208.13971%2018.8345%207.8077%2018.5869C7.47569%2018.3392%207.00576%2018.4075%206.75809%2018.7396C6.07313%2019.6577%204.98081%2020.2499%203.75%2020.2499C3.75%2019.0191%204.34218%2017.9268%205.26036%2017.2418Z%22%20fill=%22%231E1D20%22/%3E%0A%3C/svg%3E%0A" alt=""><div><strong>Discovery Hub exposure</strong><span>Get surfaced in Bridge discovery</span></div></div>
-            <div class="feature"><img src="data:image/svg+xml;utf8,%3Csvg%20width=%2224%22%20height=%2224%22%20viewBox=%220%200%2024%2024%22%20fill=%22none%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%0A%3Cpath%20fill-rule=%22evenodd%22%20clip-rule=%22evenodd%22%20d=%22M4.5%209.75C4.5%206.43629%207.18629%203.75%2010.5%203.75C13.028%203.75%2015.1893%205.31282%2016.0733%207.52408C16.2135%207.50816%2016.3559%207.5%2016.5%207.5C18.5711%207.5%2020.25%209.17893%2020.25%2011.25C20.25%2011.4459%2020.2349%2011.6386%2020.2058%2011.827C21.5744%2012.5981%2022.5%2014.0653%2022.5%2015.75C22.5%2018.2353%2020.4853%2020.25%2018%2020.25H6.75C3.85051%2020.25%201.5%2017.8995%201.5%2015C1.5%2012.8968%202.73627%2011.084%204.52024%2010.2459C4.50683%2010.0822%204.5%209.91686%204.5%209.75Z%22%20fill=%22%231E1D20%22/%3E%0A%3C/svg%3E%0A" alt=""><div><strong>Boost workspace</strong><span>Scale your workspace size</span></div></div>
-            <div class="feature"><img src="data:image/svg+xml;utf8,%3Csvg%20width=%2220%22%20height=%2220%22%20viewBox=%220%200%2020%2020%22%20fill=%22none%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%0A%3Cpath%20fill-rule=%22evenodd%22%20clip-rule=%22evenodd%22%20d=%22M6.875%205.625C6.875%203.89911%208.27411%202.5%2010%202.5C11.7259%202.5%2013.125%203.89911%2013.125%205.625C13.125%207.35089%2011.7259%208.75%2010%208.75C8.27411%208.75%206.875%207.35089%206.875%205.625Z%22%20fill=%22%231E1D20%22/%3E%0A%3Cpath%20fill-rule=%22evenodd%22%20clip-rule=%22evenodd%22%20d=%22M13.125%208.125C13.125%206.74429%2014.2443%205.625%2015.625%205.625C17.0057%205.625%2018.125%206.74429%2018.125%208.125C18.125%209.50571%2017.0057%2010.625%2015.625%2010.625C14.2443%2010.625%2013.125%209.50571%2013.125%208.125Z%22%20fill=%22%231E1D20%22/%3E%0A%3Cpath%20fill-rule=%22evenodd%22%20clip-rule=%22evenodd%22%20d=%22M1.875%208.125C1.875%206.74429%202.99429%205.625%204.375%205.625C5.75571%205.625%206.875%206.74429%206.875%208.125C6.875%209.50571%205.75571%2010.625%204.375%2010.625C2.99429%2010.625%201.875%209.50571%201.875%208.125Z%22%20fill=%22%231E1D20%22/%3E%0A%3Cpath%20fill-rule=%22evenodd%22%20clip-rule=%22evenodd%22%20d=%22M5.25822%2012.5979C6.25653%2011.037%208.00696%2010%2010%2010C11.9933%2010%2013.7439%2011.0373%2014.7422%2012.5985C15.4323%2013.6779%2015.7309%2014.9793%2015.5908%2016.2483C15.5689%2016.4466%2015.4537%2016.6225%2015.2806%2016.7218C13.7245%2017.6147%2011.9209%2018.125%2010%2018.125C8.0791%2018.125%206.27549%2017.6147%204.71937%2016.7218C4.54633%2016.6225%204.43108%2016.4466%204.40919%2016.2483C4.26911%2014.9791%204.56784%2013.6774%205.25822%2012.5979Z%22%20fill=%22%231E1D20%22/%3E%0A%3Cpath%20d=%22M4.23524%2011.8781C4.2252%2011.8935%204.21523%2011.9089%204.20531%2011.9244C3.40076%2013.1824%203.03257%2014.6806%203.14559%2016.1575C2.63889%2016.0805%202.14725%2015.9567%201.67536%2015.7906L1.57956%2015.7568C1.4048%2015.6953%201.28269%2015.5366%201.26799%2015.3519L1.25994%2015.2506C1.25335%2015.1678%201.25%2015.0842%201.25%2015C1.25%2013.3209%202.5742%2011.9512%204.23524%2011.8781Z%22%20fill=%22%231E1D20%22/%3E%0A%3Cpath%20d=%22M16.8547%2016.1575C16.9677%2014.6808%2016.5997%2013.183%2015.7954%2011.9251C15.7854%2011.9094%2015.7753%2011.8937%2015.7651%2011.8781C17.426%2011.9513%2018.75%2013.321%2018.75%2015C18.75%2015.0842%2018.7467%2015.1678%2018.7401%2015.2506L18.732%2015.3519C18.7173%2015.5366%2018.5952%2015.6953%2018.4204%2015.7568L18.3246%2015.7906C17.8528%2015.9567%2017.3613%2016.0805%2016.8547%2016.1575Z%22%20fill=%22%231E1D20%22/%3E%0A%3C/svg%3E%0A" alt=""><div><strong>Extra seats included</strong><span>Collaborate with more teammates</span></div></div>
+          <div class="locked-overlay">
+            <div class="unlock-message">
+              <span class="unlock-diamond" aria-hidden="true"><svg viewBox="0 0.421875 19.142 19.1993" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.26953 1.36719L6.35156 3.74805L8.18555 4.58203H15.7246L15.8096 4.58691C16.005 4.61152 16.1821 4.72048 16.293 4.88672L19.0273 8.98828C19.197 9.24307 19.1768 9.58007 18.9775 9.8125L10.7744 19.3828C10.6425 19.5365 10.4486 19.6238 10.2461 19.6211C10.0434 19.6181 9.85124 19.5256 9.72363 19.3682L1.97656 9.79785C1.80124 9.58124 1.77502 9.27883 1.91016 9.03516L3.0498 6.98438L3.19824 6.71484L0.945312 5.69141L0 5.26172L0.945312 4.83203L3.32715 3.74902L4.41016 1.36719L4.83984 0.421875L5.26953 1.36719ZM8.93555 9.35742L7.48242 10.0176L8.93555 10.6787L9.59668 12.1318L10.2568 10.6787L11.7109 10.0176L10.2568 9.35742L9.59668 7.9043L8.93555 9.35742Z" fill="currentColor"/></svg></span>
+              <div><strong>Full report available with Pro</strong><span>See every stream, download, open and shared link.</span></div>
+              <a class="upgrade-btn" href="#">Turn Pro to Unlock Activity Insights <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+            </div>
           </div>
-          <div class="micro">Unlock insights now — Pro boosts the whole workspace too.</div>
-        </section>
+        </div>
       </div>
     </aside>
-  </main>
-</div>
+  </div>
 </body>
 </html>
